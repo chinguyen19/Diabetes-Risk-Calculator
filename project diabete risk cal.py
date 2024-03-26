@@ -56,7 +56,30 @@ Project App GUI starts from here
 # Get all patients
 all_patients = client.getAllPatients()
 
-# Get all the data for ONE patient, e.g. for the first one; Python indexing starts from 0.
-first_patient_all = client.getAllDataForPatient(all_patients[0]["id"])
-#pprint(first_patient_all)
+
+def calculateAge(born):
+    """
+    Calculating the age in years
+    """
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < 
+                                     (born.month, born.day))
+
+def calculateRisk(age, gender, family_history, glucose, sbp, hdl):
+    """
+    Calculate the diabetes risk level 
+    """
+    risk = 100 / (1 + np.exp(-1 * ((0.028 * age) + (0.661 * sex) + (0.412 * ethnicity) +
+                                    (0.079 * fasting_glucose) + (0.018 * sbp) - (0.039 * hdl) +
+                                    (0.07 * bmi) + (0.481 * family_history) - 13.415)))
+    return risk
+
+def retrievePatientData():
+    # Get all the record data from the database for the given patient
+    patient_id = patient_id_entry.get()
+    patient_data = client.getPatientData(patient_id)
+
+
+
+
 

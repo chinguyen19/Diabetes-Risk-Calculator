@@ -27,10 +27,6 @@ class SimpleFHIRClient(object):
         entries = self.getJson(requesturl)["entry"]
         return [entry["resource"] for entry in entries]
 
-    def getObservationsForPatient(self, patient_id, code):
-        requesturl = f"{self.server_url}/Observation?subject={patient_id}&code={code}&_format=json"
-        entries = self.getJson(requesturl)["entry"]
-        return [entry["resource"] for entry in entries]
 
     def getAllDataForPatient(self, patient_id):
         requesturl = self.server_url + "/Patient/" + \
@@ -102,15 +98,14 @@ sbp = []
 bmi = []
 
 # Fetching all the data for the patient
-id_val = int(input("Enter the patient ID: "))
-for id_val in id_list:
-    all_data = client.getAllDataForPatient(all_patients[id_list.index(id_val)]["id"])
+id_val = input("Enter the patient ID: ")
+all_data = client.getAllDataForPatient(all_patients[id_list.index(id_val)]["id"])
     
-    # Extract only the desired observations (variables)
-    x = range(0, len(all_data))
-    hdl_found = False
-    sbp_found = False
-    bmi_found = False
+# Extract only the desired observations (variables)
+x = range(0, len(all_data))
+hdl_found = False
+sbp_found = False
+bmi_found = False
     
     # Find all observations among 
 for i in x:

@@ -13,7 +13,7 @@ from tkinter import *
 import PIL
 from PIL import Image, ImageTk
 from tkinter import ttk
-
+import numpy as np
 
 class SimpleFHIRClient(object):
     def __init__(self, server_url, server_user, server_password, debug=False):
@@ -75,24 +75,7 @@ for patient_record in all_patients:
     
     pprint("Patient record id = {}, Name = {}".format(patient_id, patient_given + " " + patient_family))
 
-"""
-def calculateAge(born):
-    
-    Calculating the age in years
-    
-    today = date.today()
-    return today.year - born.year - ((today.month, today.day) < 
-                                     (born.month, born.day))
 
-def calculateRisk(age, gender, family_history, glucose, sbp, hdl):
-    
-    Calculate the diabetes risk level 
-    
-    risk = 100 / (1 + np.exp(-1 * ((0.028 * age) + (0.661 * sex) + (0.412 * ethnicity) +
-                                    (0.079 * fasting_glucose) + (0.018 * sbp) - (0.039 * hdl) +
-                                    (0.07 * bmi) + (0.481 * family_history) - 13.415)))
-    return risk
-"""
 hdl = []
 sbp = []
 bmi = []
@@ -145,8 +128,40 @@ else:
 
 
 
+def calculateAge(born):
+    
+    # Calculating the age in years
+    
+    today = date.today()
+    return today.year - born.year - ((today.month, today.day) < 
+                                     (born.month, born.day))
+
+def calculateRisk(age, gender, family_history, fasting_glucose, sbp, hdl, bmi):
+    
+
+    
+    # Fetch gender data here
+    """
+    Write your code here
+    """
+    
+   
+    
+    risk = 100 / (1 + np.exp(-1 * ((0.028 * age) + (0.661 * gender) + (0.412 * ethnicity) +
+                                    (0.079 * fasting_glucose) + (0.018 * sbp) - (0.039 * hdl) +
+                                    (0.07 * bmi) + (0.481 * family_history) - 13.415)))
+    return round(risk, 2)
 
 
 
 
+born = datetime.strptime(all_patients[id_list.index(id_val)]['birthDate'], '%Y-%m-%d')
+age = calculateAge(born)
+# Assume user input
+fasting_glucose = 90 # This we can try random number, in which 70-100 mg/dL is normal range indicite stable blood sugar level
+family_history = 0
+ethnicity = 1
+gender = 1
 
+risk = calculateRisk(age, gender, family_history, fasting_glucose, sbp[-1], hdl[-1], bmi[-1])
+pprint("7.5 year risk of Diabetes for the patient: {} %".format(risk))

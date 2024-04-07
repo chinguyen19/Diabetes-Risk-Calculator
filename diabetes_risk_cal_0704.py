@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Mar 19 16:26:38 2024
 
-@author: chees
-"""
 
 import json
 from datetime import date, datetime
@@ -138,12 +133,6 @@ def calculateAge(born):
 
 def calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp_value, hdl_value, bmi_value):
 
-    gender = int(input("Enter gender (0 for male, 1 for female): "))
-    ethnicity = int(input(
-        "Enter ethnicity (0 for non-Hispanic white, 1 for Latin American): "))
-    family_history = int(input("Enter family history (0 if no, 1 if yes): "))
-    fasting_glucose = float(input("Enter fasting glucose level in mg/dL: "))
-
     # Check if lists are empty before accessing their last elements
     if sbp_value is None or len(sbp_value) == 0:
         sbp_value = float(input(
@@ -174,11 +163,13 @@ def calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp_v
 
 born = datetime.strptime(all_patients[id_list.index(id_val)]['birthDate'], '%Y-%m-%d')
 age = calculateAge(born)
-# Assume user input
-fasting_glucose = 90 # This we can try random number, in which 70-100 mg/dL is normal range indicite stable blood sugar level
-family_history = 0
-ethnicity = 1
-gender = 1
+
+# Get missing data from user input
+gender = int(input("Enter gender (0 for male, 1 for female): "))
+ethnicity = int(input(
+        "Enter ethnicity (0 for non-Hispanic white, 1 for Latin American): "))
+family_history = int(input("Enter family history (0 if no, 1 if yes): "))
+fasting_glucose = float(input("Enter fasting glucose level in mg/dL: "))
 
 risk = calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp, hdl, bmi)
 

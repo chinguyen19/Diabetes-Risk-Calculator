@@ -160,7 +160,6 @@ def calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp_v
 
 
 
-
 born = datetime.strptime(all_patients[id_list.index(id_val)]['birthDate'], '%Y-%m-%d')
 age = calculateAge(born)
 

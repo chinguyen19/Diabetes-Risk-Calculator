@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 Created on Tue Mar 19 16:26:38 2024
 
@@ -136,32 +136,53 @@ def calculateAge(born):
     return today.year - born.year - ((today.month, today.day) < 
                                      (born.month, born.day))
 
-def calculateRisk(age, gender, family_history, fasting_glucose, sbp, hdl, bmi):
+def setGender(sex):
+    if sex == "male":
+        gender = 0
+    else:
+        gender = 1 
+    return gender
+
+def calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp_value, hdl_value, bmi_value):
+
+    # Check if lists are empty before accessing their last elements
+    if sbp_value is None or len(sbp_value) == 0:
+        sbp_value = float(input(
+            "Systolic blood pressure not found. Please enter a value in mmHg: "))
+    else:
+        sbp_value = sbp_value[-1]
+
+    if hdl_value is None or len(hdl_value) == 0:
+        hdl_value = float(input(
+            "HDL cholesterol level not found. Please enter a value in mg/dL: "))
+    else:
+        hdl_value = hdl_value[-1]
+
+    if bmi_value is None or len(bmi_value) == 0:
+        bmi_value = float(
+            input("BMI not found. Please enter a value in kg/m²: "))
+    else:
+        bmi_value = bmi_value[-1]
     
 
-    
-    # Fetch gender data here
-    """
-    Write your code here
-    """
-    
-   
-    
     risk = 100 / (1 + np.exp(-1 * ((0.028 * age) + (0.661 * gender) + (0.412 * ethnicity) +
-                                    (0.079 * fasting_glucose) + (0.018 * sbp) - (0.039 * hdl) +
-                                    (0.07 * bmi) + (0.481 * family_history) - 13.415)))
+                                    (0.079 * fasting_glucose) + (0.018 * sbp_value) - (0.039 * hdl_value) +
+                                    (0.07 * bmi_value) + (0.481 * family_history) - 13.415)))
     return round(risk, 2)
 
 
-
-
+sex = all_patients[id_list.index(id_val)]['gender']
+gender = setGender(sex)
 born = datetime.strptime(all_patients[id_list.index(id_val)]['birthDate'], '%Y-%m-%d')
 age = calculateAge(born)
-# Assume user input
-fasting_glucose = 90 # This we can try random number, in which 70-100 mg/dL is normal range indicite stable blood sugar level
-family_history = 0
-ethnicity = 1
-gender = 1
 
-risk = calculateRisk(age, gender, family_history, fasting_glucose, sbp[-1], hdl[-1], bmi[-1])
+# Get missing data from user input
+
+ethnicity = int(input(
+        "Enter ethnicity (0 for non-Hispanic white, 1 for Latin American): "))
+family_history = int(input("Enter family history (0 if no, 1 if yes): "))
+fasting_glucose = float(input("Enter fasting glucose level in mg/dL: "))
+
+risk = calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp, hdl, bmi)
+
 pprint("7.5 year risk of Diabetes for the patient: {} %".format(risk))

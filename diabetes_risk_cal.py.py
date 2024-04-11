@@ -15,6 +15,7 @@ from PIL import Image, ImageTk
 from tkinter import ttk
 import numpy as np
 import tkinter as tk
+from tkinter import messagebox
 
 class SimpleFHIRClient(object):
     def __init__(self, server_url, server_user, server_password, debug=False):

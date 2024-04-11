@@ -14,6 +14,7 @@ import PIL
 from PIL import Image, ImageTk
 from tkinter import ttk
 import numpy as np
+import tkinter as tk
 
 class SimpleFHIRClient(object):
     def __init__(self, server_url, server_user, server_password, debug=False):
@@ -76,9 +77,7 @@ for patient_record in all_patients:
     pprint("Patient record id = {}, Name = {}".format(patient_id, patient_given + " " + patient_family))
 
 
-hdl = []
-sbp = []
-bmi = []
+hdl, sbp, bmi = [],[],[]
 
 # Fetching all the data for the patient
 id_val = input("Enter the patient ID: ")
@@ -90,7 +89,7 @@ hdl_found = False
 sbp_found = False
 bmi_found = False
     
-    # Find all observations among 
+# Find certain observations (hdl, sbp, bmi) from the fhir database 
 for i in x:
     if all_data[i]['resource']['resourceType'] == 'Observation':
         observation_code = all_data[i]['resource']['code']['text']
@@ -112,21 +111,6 @@ for i in x:
             bmi.append(bmivalue)
             bmi_found = True
             
-# Check if observations were found
-if not hdl_found:
-    print("HDL Cholesterol value not found.")
-else:
-    pprint("HDL value for the patient: {} mg/dL".format(hdl[-1]))
-if not sbp_found:
-    print("Systolic Blood Pressure value not found.")
-else:
-    pprint("SBP value for the patient: {} mm[Hg]".format(sbp[-1]))
-if not bmi_found:
-    print("BMI value not found.")        
-else:
-     pprint("BMI value for the patient: {} kg/m2".format(bmi[-1]))      
-
-
 
 def calculateAge(born):
     
@@ -137,33 +121,13 @@ def calculateAge(born):
                                      (born.month, born.day))
 
 def setGender(sex):
-    if sex == "male":
-        gender = 0
-    else:
-        gender = 1 
-    return gender
+    return 1 if sex.lower() == "female" else 0
 
 def calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp_value, hdl_value, bmi_value):
-
-    # Check if lists are empty before accessing their last elements
-    if sbp_value is None or len(sbp_value) == 0:
-        sbp_value = float(input(
-            "Systolic blood pressure not found. Please enter a value in mmHg: "))
-    else:
-        sbp_value = sbp_value[-1]
-
-    if hdl_value is None or len(hdl_value) == 0:
-        hdl_value = float(input(
-            "HDL cholesterol level not found. Please enter a value in mg/dL: "))
-    else:
-        hdl_value = hdl_value[-1]
-
-    if bmi_value is None or len(bmi_value) == 0:
-        bmi_value = float(
-            input("BMI not found. Please enter a value in kg/m²: "))
-    else:
-        bmi_value = bmi_value[-1]
-    
+   
+    sbp_value = sbp_value[-1]
+    hdl_value = hdl_value[-1]
+    bmi_value = bmi_value[-1] 
 
     risk = 100 / (1 + np.exp(-1 * ((0.028 * age) + (0.661 * gender) + (0.412 * ethnicity) +
                                     (0.079 * fasting_glucose) + (0.018 * sbp_value) - (0.039 * hdl_value) +
@@ -171,18 +135,96 @@ def calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp_v
     return round(risk, 2)
 
 
-sex = all_patients[id_list.index(id_val)]['gender']
-gender = setGender(sex)
-born = datetime.strptime(all_patients[id_list.index(id_val)]['birthDate'], '%Y-%m-%d')
-age = calculateAge(born)
 
-# Get missing data from user input
+# # Get missing data from user input
 
-ethnicity = int(input(
-        "Enter ethnicity (0 for non-Hispanic white, 1 for Latin American): "))
-family_history = int(input("Enter family history (0 if no, 1 if yes): "))
-fasting_glucose = float(input("Enter fasting glucose level in mg/dL: "))
+# ethnicity = int(input(
+#         "Enter ethnicity (0 for non-Hispanic white, 1 for Latin American): "))
+# family_history = int(input("Enter family history (0 if no, 1 if yes): "))
+# fasting_glucose = float(input("Enter fasting glucose level in mg/dL: "))
 
-risk = calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp, hdl, bmi)
+# risk = calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp, hdl, bmi)
 
-pprint("7.5 year risk of Diabetes for the patient: {} %".format(risk))
+# pprint("7.5 year risk of Diabetes for the patient: {} %".format(risk))
+
+
+def showInputForm(id_val, hdl=[], sbp=[], bmi=[]):
+    # Create a new window for input form
+    input_window = Toplevel(window)
+    input_window.title("Enter Risk Data")
+    input_window.geometry("300x250")
+    
+    # Create entry fields for additional input
+    ethnicity_label = Label(input_window, text="Enter ethnicity (0 for non-Hispanic white, 1 for Latin American):")
+    ethnicity_label.pack()
+    ethnicity_entry = Entry(input_window)
+    ethnicity_entry.pack()
+    
+    family_history_label = Label(input_window, text="Enter family history (0 if no, 1 if yes):")
+    family_history_label.pack()
+    family_history_entry = Entry(input_window)
+    family_history_entry.pack()
+    
+    fasting_glucose_label = Label(input_window, text="Enter fasting glucose level in mg/dL:")
+    fasting_glucose_label.pack()
+    fasting_glucose_entry = Entry(input_window)
+    fasting_glucose_entry.pack()
+    
+    # Button to calculate risk
+    calculate_risk_button = Button(input_window, text="Calculate Risk",
+                                   command=lambda: showRisk(id_val, all_patients, sbp, hdl, bmi,
+                                                            ethnicity_entry.get(), family_history_entry.get(),
+                                                            fasting_glucose_entry.get(), input_window))
+    calculate_risk_button.pack(pady=20)    
+
+
+def showRisk(id_val, all_patients, sbp, hdl, bmi, ethnicity, family_history, fasting_glucose, input_window):
+    try:
+        sex = all_patients[id_list.index(id_val)]['gender']
+        gender = setGender(sex)
+        born = datetime.strptime(all_patients[id_list.index(id_val)]['birthDate'], '%Y-%m-%d')
+        age = calculateAge(born)
+    except IndexError:
+        messagebox.showerror("Error", "Patient ID not found")
+        return
+
+    # Convert input values to appropriate types
+    ethnicity = int(ethnicity)
+    family_history = int(family_history)
+    fasting_glucose = float(fasting_glucose)
+
+    # Check if any of the observations are missing
+    if not sbp or not hdl or not bmi:
+        messagebox.showerror("Missing Data", "Please take complementary tests.")
+        return
+
+    # Calculate risk
+    risk = calculateRisk(age, gender, ethnicity, family_history, fasting_glucose, sbp, hdl, bmi)
+
+    # Show risk and observation information in a new window
+    result_window = Toplevel(input_window)
+    result_window.title("Risk result")
+    Label(result_window, text="HDL value for the patient: {} mg/dL".format(hdl[-1]), pady=5).pack()
+    Label(result_window, text="SBP value for the patient: {} mm[Hg]".format(sbp[-1]), pady=5).pack()
+    Label(result_window, text="BMI value for the patient: {} kg/m2".format(bmi[-1]), pady=5).pack()
+    Label(result_window, text=f'7.5 year risk of Diabetes for the patient: {risk} %', pady=10, bg='#ffbf00').pack()
+
+
+# GUI main window creation part
+window = tk.Tk()
+window.title("Diabetes Risk Calculator")
+window.configure(background="white")
+window.geometry("370x250")
+
+# Create an entry field for patient ID
+id_label = Label(window, text="Enter Patient ID:")
+id_label.pack()
+# Create an entry field for patient ID
+id_entry = Entry(window)
+id_entry.pack()
+
+# Create a button to show input form
+show_input_button = Button(window, text="Enter", command=lambda: showInputForm(id_entry.get().strip(), hdl, sbp, bmi))
+show_input_button.pack(pady=10)
+
+window.mainloop()

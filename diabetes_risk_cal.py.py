@@ -119,7 +119,6 @@ for i in x:
 def calculateAge(born):
 
     # Calculating the age in years
-
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
@@ -175,7 +174,7 @@ def calculateRisk(
 # pprint("7.5 year risk of Diabetes for the patient: {} %".format(risk))
 
 FONT = ("Helvetica", 12)
-TITLE_FONT = ("Helvetica", 12, "bold")
+TITLE_FONT = ("Helvetica", 24, "bold")
 RESULT_FONT = ("Helvetica", 12, "bold", "yellow")
 
 # window = tk.Tk()
@@ -187,7 +186,6 @@ style.configure("custom.TRadiobutton", foreground="white", font=FONT)
 style.configure("Test.TLabel", background="yellow")
 
 window.title("Diabetes Risk Calculator")
-window.configure(background="white")
 window.geometry("500x500")
 
 # Create an entry field for patient ID
@@ -302,17 +300,19 @@ def showInputForm(id_val, hdl=[], sbp=[], bmi=[]):
         input_window,
         text="CALCULATE RISK",
         font=FONT,
-        command=lambda: showRisk(
-            id_val,
-            all_patients,
-            sbp,
-            hdl,
-            bmi,
-            ethnicity_value.get(),
-            family_history_var.get(),
-            fasting_glucose_entry.get(),
-            input_window,
-        ),
+        command=lambda: [
+            showRisk(
+                id_val,
+                all_patients,
+                sbp,
+                hdl,
+                bmi,
+                ethnicity_value.get(),
+                family_history_var.get(),
+                fasting_glucose_entry.get(),
+                input_window,
+            ),
+        ],
     )
 
     calculate_risk_button.pack(pady=20)
@@ -329,6 +329,7 @@ def showRisk(
     fasting_glucose,
     input_window,
 ):
+
     try:
         sex = all_patients[id_list.index(id_val)]["gender"]
         gender = setGender(sex)

@@ -2,7 +2,7 @@
 
 ### Project Overview
 
-This software tool is designed to assist healthcare professionals in assessing an individual's risk of developing diabetes based on various health parameters. It is connected to a real-time database using FHIR (Fast Healthcare Interoperability Resources) server to make timely, accurate, and informed decisions regarding diabetes risk.
+This software tool is designed to assist healthcare professionals in assessing an individual's risk of developing diabetes based on various health parameters. It is connected to a real-time database using **_FHIR (Fast Healthcare Interoperability Resources)_** server to make timely, accurate, and informed decisions regarding diabetes risk.
 
 **Key Benefits:**
 - **Enhanced Efficiency**: Centralizes and automates patient data entry, reducing redundant testing.

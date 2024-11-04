@@ -1,4 +1,4 @@
-# DiabetesCalculationApp
+# Diabetes Risk Calculation App
 
 ### Project Overview
 
